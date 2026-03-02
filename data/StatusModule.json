@@ -9,5 +9,10 @@
     "Writing TypeScript",
     "Modifying config files",
     "Playing Minecraft"
-  ]
+  ],
+  "refresh": {
+    "hours": 4,
+    "minutes": 0,
+    "seconds": 0
+  }
 }
