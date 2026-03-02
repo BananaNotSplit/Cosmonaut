@@ -14,14 +14,20 @@ export class StatusModule extends EntangledModule<IStatusModuleConfiguration> {
 		}
 	}
 
-	Ready(): void {
+	SetRandomStatus(): void {
+		if (!this.data) return
+		var status = this.data.statuses[Math.floor(Math.random()*this.data.statuses.length)];
 		this.client.user?.setPresence({
 			activities: [
 				{
-					name: "hi"
+					name: status ?? "Failed to get status 3:"
 				}
 			]
 		})
+	}
+
+	Ready(): void {
+		this.SetRandomStatus()
 	}
 
 	Cleanup(): void {
