@@ -1,4 +1,3 @@
-import { Client } from "discord.js";
 import EntangledModule from "../ModuleSystem/EntangledModule";
 
 export interface IRefreshTime {
