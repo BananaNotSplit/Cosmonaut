@@ -8,7 +8,7 @@ export interface IChat {
 
 export interface ICharacterChatConfig {
 	chatChannel: string
-	chats: never[]
+	chats: IChat[]
 }
 
 export class CharacterChatModule extends EntangledModule<ICharacterChatConfig> {
