@@ -1,9 +1,10 @@
 import Module from "./Module";
 import path from "path";
 import fs from "fs";
+import { Client } from "discord.js";
 
 export default abstract class EntangledModule<Data> extends Module {
-	data: Data | null = null
+	data: Data
 
 	get saveDirectory(): string {
 		return path.join(process.cwd(), "data")
@@ -13,9 +14,7 @@ export default abstract class EntangledModule<Data> extends Module {
 		return path.join(this.saveDirectory, `${this.constructor.name}.json`)
 	}
 
-	Load(): void {
-		super.Load()
-
+	LoadData(): Data {
 		// Ensure data directory exists
 		if (!fs.existsSync(this.saveDirectory)) {
 			fs.mkdirSync(this.saveDirectory, { recursive: true })
@@ -25,18 +24,17 @@ export default abstract class EntangledModule<Data> extends Module {
 		if (fs.existsSync(this.saveFilePath)) {
 			try {
 				const raw = fs.readFileSync(this.saveFilePath, "utf-8")
-				this.data = JSON.parse(raw) as Data
+				return JSON.parse(raw) as Data
 			} catch (err) {
 				console.error(
 					`Failed to load data for ${this.constructor.name}:`,
 					err
 				)
-				this.data = this.NewData()
+				return this.NewData()
 			}
 		} else {
 			// No file yet → initialize empty
-			this.data = this.NewData()
-			this.SaveData() // save data to create editable file immediately
+			return this.NewData()
 		}
 	}
 
@@ -60,9 +58,10 @@ export default abstract class EntangledModule<Data> extends Module {
 		}
 	}
 
-	Cleanup(): void {
-		this.SaveData()
-	}
-
 	abstract NewData(): Data
+
+	constructor(client: Client) {
+		super(client)
+		this.data = this.LoadData()
+	}
 }
