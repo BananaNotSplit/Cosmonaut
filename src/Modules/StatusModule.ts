@@ -1,3 +1,4 @@
+import { ActivityType } from "discord.js";
 import EntangledModule from "../ModuleSystem/EntangledModule";
 
 export interface IRefreshTime {
@@ -29,7 +30,8 @@ export class StatusModule extends EntangledModule<IStatusModuleConfiguration> {
 		this.client.user?.setPresence({
 			activities: [
 				{
-					name: status ?? "Failed to get status 3:"
+					name: status ?? "Failed to get status 3:",
+					type: ActivityType.Custom
 				}
 			]
 		})
