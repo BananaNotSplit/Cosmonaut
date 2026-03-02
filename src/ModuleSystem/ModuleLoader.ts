@@ -14,7 +14,7 @@ export default class ModuleLoader {
 			var newModule: Module = new target(client) // yeah yeah subclasses shut up TS
 			this.modules.push(newModule)
 		})
-		console.log(` loaded ${this.modules.length} module(s)`)
+		console.log(`loaded ${this.modules.length} module(s)`)
 
 		this.modules.forEach(module => {
 			module.Load()
