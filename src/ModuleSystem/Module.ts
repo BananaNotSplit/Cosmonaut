@@ -12,11 +12,18 @@ export default abstract class Module {
 
 	Cleanup(): void { }
 
-	MessageCreate(message: Message, fromSelf: boolean) { }
+	MessageCreate(message: Message, fromSelf: boolean, botMentioned: boolean) { }
 
 	MessageCreateRaw(message: Message) {
-		this.MessageCreate(message, message.author === this.client.user)
+		if (!this.client.user) return
+		this.MessageCreate(
+			message,
+			message.author === this.client.user,
+			message.mentions.has(this.client.user)
+		)
 	}
+
+
 
 	constructor(client: Client) {
 		this.client = client
