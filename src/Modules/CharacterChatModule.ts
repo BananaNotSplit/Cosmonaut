@@ -8,14 +8,14 @@ export interface IChat {
 
 export interface ICharacterChatConfig {
 	chatChannel: string
-	chats: IChat[]
+	chats: {[thread: string]: IChat}
 }
 
 export class CharacterChatModule extends EntangledModule<ICharacterChatConfig> {
 	NewData(): ICharacterChatConfig {
 		return {
 			chatChannel: "PLACE_SNOWFLAKE_HERE",
-			chats: []
+			chats: {}
 		}
 	}
 }
