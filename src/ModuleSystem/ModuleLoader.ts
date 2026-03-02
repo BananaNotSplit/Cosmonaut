@@ -17,7 +17,6 @@ export default class ModuleLoader {
 		console.log(`loaded ${this.modules.length} module(s)`)
 
 		this.modules.forEach(module => {
-			module.Load()
 			if (module instanceof EntangledModule) {
 				this.timeouts.push(setInterval(() => {
 					module.SaveData()

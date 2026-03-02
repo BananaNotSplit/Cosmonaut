@@ -3,11 +3,6 @@ import { Client, Events, Message } from "discord.js";
 export default abstract class Module {
 	client: Client
 
-	Load(): void {
-		this.client.on(Events.MessageCreate, (message) => this.MessageCreateRaw(message))
-		this.client.on(Events.ClientReady, () => this.Ready())
-	}
-
 	Ready(): void { }
 
 	Cleanup(): void { }
@@ -27,5 +22,8 @@ export default abstract class Module {
 
 	constructor(client: Client) {
 		this.client = client
+		
+		this.client.on(Events.MessageCreate, (message) => this.MessageCreateRaw(message))
+		this.client.on(Events.ClientReady, () => this.Ready())
 	}
 }
