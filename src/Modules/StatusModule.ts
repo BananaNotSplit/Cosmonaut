@@ -40,8 +40,8 @@ export class StatusModule extends EntangledModule<IStatusModuleConfiguration> {
 		if (!this.data) return
 		this.SetRandomStatus()
 		this.statusTimeout = setInterval(() => this.SetRandomStatus(),
-		(this.data?.refresh.seconds + (this.data?.refresh.minutes + this.data?.refresh.hours * 60) * 60) * 1000
-	)
+			(this.data?.refresh.seconds + (this.data?.refresh.minutes + this.data?.refresh.hours * 60) * 60) * 1000
+		)
 	}
 
 	Cleanup(): void {
