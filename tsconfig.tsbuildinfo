@@ -1,1 +1,0 @@
-{"root":["./src/index.ts","./src/modulesystem/entangledmodule.ts","./src/modulesystem/module.ts","./src/modulesystem/moduleclient.ts","./src/modulesystem/moduleloader.ts","./src/modules/characterchatmodule.ts","./src/modules/statusmodule.ts"],"version":"5.9.3"}
