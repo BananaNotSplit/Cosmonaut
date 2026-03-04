@@ -14,7 +14,7 @@ export default abstract class EntangledModule<Data> extends Module {
 		return path.join(this.saveDirectory, `${this.constructor.name}.json`)
 	}
 
-	LoadData(): Data {
+	LoadData(): [Data, boolean] {
 		// Ensure data directory exists
 		if (!fs.existsSync(this.saveDirectory)) {
 			fs.mkdirSync(this.saveDirectory, { recursive: true })
@@ -24,17 +24,17 @@ export default abstract class EntangledModule<Data> extends Module {
 		if (fs.existsSync(this.saveFilePath)) {
 			try {
 				const raw = fs.readFileSync(this.saveFilePath, "utf-8")
-				return JSON.parse(raw) as Data
+				return [JSON.parse(raw) as Data, true]
 			} catch (err) {
 				console.error(
 					`Failed to load data for ${this.constructor.name}:`,
 					err
 				)
-				return this.NewData()
+				return [this.NewData(), true]
 			}
 		} else {
 			// No file yet → initialize empty
-			return this.NewData()
+			return [this.NewData(), false]
 		}
 	}
 
@@ -62,6 +62,11 @@ export default abstract class EntangledModule<Data> extends Module {
 
 	constructor(client: Client) {
 		super(client)
-		this.data = this.LoadData()
+		let details = this.LoadData()
+		this.data = details[0]
+		if (!details[1]) {
+			// New file created, should save!
+			this.SaveData()
+		}
 	}
 }
