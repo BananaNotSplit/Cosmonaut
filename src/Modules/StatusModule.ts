@@ -25,7 +25,6 @@ export class StatusModule extends EntangledModule<IStatusModuleConfiguration> {
 	}
 
 	SetRandomStatus(): void {
-		if (!this.data) return
 		var status = this.data.statuses[Math.floor(Math.random()*this.data.statuses.length)];
 		this.client.user?.setPresence({
 			activities: [
@@ -38,7 +37,6 @@ export class StatusModule extends EntangledModule<IStatusModuleConfiguration> {
 	}
 
 	Ready(): void {
-		if (!this.data) return
 		this.SetRandomStatus()
 		this.statusTimeout = setInterval(() => this.SetRandomStatus(),
 			(this.data?.refresh.seconds + (this.data?.refresh.minutes + this.data?.refresh.hours * 60) * 60) * 1000

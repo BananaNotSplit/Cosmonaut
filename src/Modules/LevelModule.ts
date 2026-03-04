@@ -23,11 +23,6 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 	}
 
 	AddXp(source: Message): boolean {
-		if (!this.data) {
-			source.reply("Failed to add XP. Reason:\n> No \"data\" property initialized.")
-			return false
-		}
-
 		var record = this.data.Levels[source.author.id]
 		if (!record) {
 			record = { level: 0, xp: 0 }
