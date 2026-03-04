@@ -18,15 +18,16 @@ export default abstract class Module {
 		)
 	}
 
-	ThreadCreate(thread: AnyThreadChannel) { }
+	ThreadCreate(thread: AnyThreadChannel, root: Message<true>|null) { }
 
-	ForumPostCreated(thread: AnyThreadChannel, forum: ForumChannel) { }
+	ForumPostCreated(thread: AnyThreadChannel, forum: ForumChannel, root: Message<true>|null) { }
 
-	TheadCreateRaw(thread: AnyThreadChannel) {
+	async TheadCreateRaw(thread: AnyThreadChannel): Promise<void> {
+		const root = await thread.fetchStarterMessage()
 		if (thread.parent instanceof ForumChannel) {
-			this.ForumPostCreated(thread, thread.parent)
+			this.ForumPostCreated(thread, thread.parent, root)
   		} else {
-			this.ThreadCreate(thread)
+			this.ThreadCreate(thread, root)
 		}
 	}
 

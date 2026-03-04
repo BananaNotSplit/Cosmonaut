@@ -61,11 +61,16 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 		return false
 	}
 
+	XpType(source: "message"|"post"): number {
+		switch (source) {
+			case "message": return this.data.MessageXp
+			case "post": if (this.data.PostXp) return this.data.PostXp; return 0
+		}
+	}
 
-	MessageCreate(message: Message, fromSelf: boolean, botMentioned: boolean): void {
-		if (fromSelf) return
-		if (message.author.bot) return // dont level up bots
-		let leveledUp = this.AddXp(message, this.data.MessageXp)
+	GrantXp(message: Message, source: "message"|"post") {
+		console.log(`granting XP for ${source}`)
+		let leveledUp = this.AddXp(message, this.XpType(source))
 		if (leveledUp) {
 			if (this.levelUpChannel) {
 				this.levelUpChannel.send(`Conrats <@${message.author.id}>! You've reached level ${this.data.Levels[message.author.id]?.level}!`)
@@ -77,7 +82,16 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 		}
 	}
 
-	ForumPostCreated(thread: AnyThreadChannel, forum: ForumChannel): void {
-		
+
+	MessageCreate(message: Message, fromSelf: boolean, botMentioned: boolean): void {
+		if (fromSelf) return
+		if (message.author.bot) return // dont level up bots
+		this.GrantXp(message, "message")
+	}
+
+	ForumPostCreated(thread: AnyThreadChannel, forum: ForumChannel, root: Message<true>|null): void {
+		if (!root) return
+		if (root.author.bot) return // dont level up bots
+		this.GrantXp(root, "post")
 	}
 }
