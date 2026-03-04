@@ -1,4 +1,4 @@
-import { Client, Events, Message } from "discord.js";
+import { AnyThreadChannel, Client, Events, ForumChannel, Message } from "discord.js";
 
 export default abstract class Module {
 	client: Client
@@ -18,12 +18,23 @@ export default abstract class Module {
 		)
 	}
 
+	ThreadCreate(thread: AnyThreadChannel) { }
 
+	ForumPostCreated(thread: AnyThreadChannel, forum: ForumChannel) { }
+
+	TheadCreateRaw(thread: AnyThreadChannel) {
+		if (thread.parent instanceof ForumChannel) {
+			this.ForumPostCreated(thread, thread.parent)
+  		} else {
+			this.ThreadCreate(thread)
+		}
+	}
 
 	constructor(client: Client) {
 		this.client = client
 		
-		this.client.on(Events.MessageCreate, (message) => this.MessageCreateRaw(message))
 		this.client.on(Events.ClientReady, () => this.Ready())
+		this.client.on(Events.MessageCreate, (message) => this.MessageCreateRaw(message))
+		this.client.on(Events.ThreadCreate, (thread) => this.TheadCreateRaw(thread))
 	}
 }
