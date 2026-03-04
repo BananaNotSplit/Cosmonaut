@@ -38,6 +38,10 @@ export default abstract class EntangledModule<Data> extends Module {
 		}
 	}
 
+	Cleanup(): void {
+		this.SaveData()
+	}
+
 	SaveData(): void {
 		try {
 			// Ensure directory exists before saving
