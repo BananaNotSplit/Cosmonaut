@@ -1,4 +1,4 @@
-import { Message, Snowflake } from "discord.js"
+import { Message, Snowflake, TextChannel } from "discord.js"
 import EntangledModule from "../ModuleSystem/EntangledModule"
 
 export interface ILevelModuleConfig {
@@ -6,6 +6,8 @@ export interface ILevelModuleConfig {
 	MessageXp: number
 
 	Levels: {[user: Snowflake]: {level: number, xp: number}}
+
+	LevelUpChannel: Snowflake|null
 }
 
 function XpForEachLevel(level: number, scalar: number): number {
@@ -14,11 +16,29 @@ function XpForEachLevel(level: number, scalar: number): number {
 } // uhh chatgpt im just gonna trust you :sob: it works tho (tested it)
 
 export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
+	levelUpChannel: TextChannel|null = null
+
 	NewData(): ILevelModuleConfig {
 		return {
 			LevelUpScalar: 10,
 			MessageXp: 1,
-			Levels: {}
+			Levels: {},
+			LevelUpChannel: null
+		}
+	}
+
+	Ready(): void {
+		if (this.data.LevelUpChannel) {
+			console.info("Finding level up channel")
+			this.client.channels.fetch(this.data.LevelUpChannel)
+			.then(channel => this.LevelUpChannelFound(channel))
+		}
+	}
+
+	LevelUpChannelFound(channel: any) {
+		if (channel instanceof TextChannel) {
+			console.log("Got level up channel")
+			this.levelUpChannel = channel
 		}
 	}
 
@@ -44,9 +64,13 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 		if (message.author.bot) return // dont level up bots
 		let leveledUp = this.AddXp(message)
 		if (leveledUp) {
-			message.reply({
-				content: `You've leveled up! You are now level ${this.data.Levels[message.author.id]?.level}!`,
-			})
+			if (this.levelUpChannel) {
+				this.levelUpChannel.send(`Conrats <@${message.author.id}>! You've reached level ${this.data.Levels[message.author.id]?.level}!`)
+			} else {
+				message.reply({
+					content: `You've leveled up! You are now level ${this.data.Levels[message.author.id]?.level}!`,
+				})
+			}
 		}
 	}
 }
