@@ -4,6 +4,7 @@ import path from "path";
 import { StatusModule } from "./Modules/StatusModule";
 import { CharacterChatModule } from "./Modules/CharacterChatModule";
 import { ShutdownModule } from "./Modules/ShutdownModule";
+import LevelModule from "./Modules/LevelModule";
 
 var client = new ModuleClient({
 	intents: [
@@ -13,7 +14,8 @@ var client = new ModuleClient({
 }, [
 	StatusModule,
 	CharacterChatModule,
-	ShutdownModule
+	ShutdownModule,
+	LevelModule
 ])
 
 var tokenConfig: { token: string } = require(path.join(process.cwd(), "data", "secret", "token.json"))
