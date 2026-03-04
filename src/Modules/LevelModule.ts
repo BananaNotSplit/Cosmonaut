@@ -1,9 +1,10 @@
-import { Message, Snowflake, TextChannel } from "discord.js"
+import { AnyThreadChannel, ForumChannel, Message, Snowflake, TextChannel } from "discord.js"
 import EntangledModule from "../ModuleSystem/EntangledModule"
 
 export interface ILevelModuleConfig {
 	LevelUpScalar: number
 	MessageXp: number
+	PostXp: number|null
 
 	Levels: {[user: Snowflake]: {level: number, xp: number}}
 
@@ -22,6 +23,7 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 		return {
 			LevelUpScalar: 10,
 			MessageXp: 1,
+			PostXp: null,
 			Levels: {},
 			LevelUpChannel: null
 		}
@@ -42,14 +44,14 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 		}
 	}
 
-	AddXp(source: Message): boolean {
+	AddXp(source: Message, amount: number): boolean {
 		var record = this.data.Levels[source.author.id]
 		if (!record) {
 			record = { level: 0, xp: 0 }
 			this.data.Levels[source.author.id] = record // set the property for saving!
 		}
 
-		record.xp += this.data.MessageXp
+		record.xp += amount
 		if (record.xp >= XpForEachLevel(record.level, this.data.LevelUpScalar)) {
 			record.level ++
 			record.xp = 0 // not working out that math rn
@@ -59,10 +61,11 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 		return false
 	}
 
+
 	MessageCreate(message: Message, fromSelf: boolean, botMentioned: boolean): void {
 		if (fromSelf) return
 		if (message.author.bot) return // dont level up bots
-		let leveledUp = this.AddXp(message)
+		let leveledUp = this.AddXp(message, this.data.MessageXp)
 		if (leveledUp) {
 			if (this.levelUpChannel) {
 				this.levelUpChannel.send(`Conrats <@${message.author.id}>! You've reached level ${this.data.Levels[message.author.id]?.level}!`)
@@ -72,5 +75,9 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 				})
 			}
 		}
+	}
+
+	ForumPostCreated(thread: AnyThreadChannel, forum: ForumChannel): void {
+		
 	}
 }
