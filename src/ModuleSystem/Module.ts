@@ -1,4 +1,4 @@
-import { AnyThreadChannel, Client, Events, ForumChannel, Message } from "discord.js";
+import { AnyThreadChannel, CacheType, Client, Events, ForumChannel, Interaction, Message, User, UserContextMenuCommandInteraction } from "discord.js";
 
 export default abstract class Module {
 	client: Client
@@ -31,11 +31,25 @@ export default abstract class Module {
 		}
 	}
 
+	UserContextMenuCommand(interaction: UserContextMenuCommandInteraction, firing: User, target: User, command: string) { }
+
+	InteractionCreate(interaction: Interaction<CacheType>) {
+		if (interaction.isUserContextMenuCommand()) {
+			this.UserContextMenuCommand(
+				interaction,
+				interaction.user,
+				interaction.targetUser,
+				interaction.commandId
+			)
+		}
+	}
+
 	constructor(client: Client) {
 		this.client = client
 		
 		this.client.on(Events.ClientReady, () => this.Ready())
 		this.client.on(Events.MessageCreate, (message) => this.MessageCreateRaw(message))
 		this.client.on(Events.ThreadCreate, (thread) => this.TheadCreateRaw(thread))
+		this.client.on(Events.InteractionCreate, (interaction) => this.InteractionCreate(interaction))
 	}
 }

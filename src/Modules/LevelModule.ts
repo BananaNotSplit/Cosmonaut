@@ -1,5 +1,9 @@
-import { AnyThreadChannel, ForumChannel, Message, Snowflake, TextChannel } from "discord.js"
+import { AnyThreadChannel, ApplicationCommandType, ForumChannel, Message, Snowflake, TextChannel, User, UserContextMenuCommandInteraction } from "discord.js"
 import EntangledModule from "../ModuleSystem/EntangledModule"
+
+export interface ILevelModuleCommandMatrix {
+	getInfo: Snowflake|null
+}
 
 export interface ILevelModuleConfig {
 	LevelUpScalar: number
@@ -9,6 +13,8 @@ export interface ILevelModuleConfig {
 	Levels: {[user: Snowflake]: {level: number, xp: number}}
 
 	LevelUpChannel: Snowflake|null
+
+	commands?: ILevelModuleCommandMatrix
 }
 
 function XpForEachLevel(level: number, scalar: number): number {
@@ -29,11 +35,26 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 		}
 	}
 
+	CreateCommands(): void {
+		this.client.application?.commands.create({
+			name: "level",
+			type: ApplicationCommandType.User
+		})
+		.then(command => {
+			this.data.commands = {
+				getInfo: command.id
+			}
+		})
+	}
+
 	Ready(): void {
 		if (this.data.LevelUpChannel) {
 			console.info("Finding level up channel")
 			this.client.channels.fetch(this.data.LevelUpChannel)
 			.then(channel => this.LevelUpChannelFound(channel))
+		}
+		if (!this.data.commands) {
+			this.CreateCommands()
 		}
 	}
 
@@ -93,5 +114,15 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 		if (!root) return
 		if (root.author.bot) return // dont level up bots
 		this.GrantXp(root, "post")
+	}
+
+	UserContextMenuCommand(interaction: UserContextMenuCommandInteraction, firing: User, target: User, command: string): void {
+		if (command === this.data.commands?.getInfo) {
+			const entry = this.data.Levels[target.id]
+			if (entry)
+				interaction.reply(`Level info on <@${target.id}>:\n* Level ${entry.level}\n* XP: ${entry.xp}`)
+			else
+				interaction.reply(`The user ${target.id} has no level info! Maybe they haven't said anything yet 🤷`)
+		}
 	}
 }
