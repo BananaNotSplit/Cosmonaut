@@ -122,7 +122,7 @@ export default class LevelModule extends EntangledModule<ILevelModuleConfig> {
 			if (entry)
 				interaction.reply(`Level info on <@${target.id}>:\n* Level ${entry.level}\n* XP: ${entry.xp}`)
 			else
-				interaction.reply(`The user ${target.id} has no level info! Maybe they haven't said anything yet 🤷`)
+				interaction.reply(`The user <@${target.id}> has no level info! Maybe they haven't said anything yet 🤷`)
 		}
 	}
 }
